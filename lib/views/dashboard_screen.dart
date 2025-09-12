@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../controllers/pedido_controller.dart';
+import 'package:footflow/widgets/bottom_nav_bar.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
-  @override
+@override
   Widget build(BuildContext context) {
+    final pedidoController = Provider.of<PedidoController>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.black87),
-          onPressed: () {
-            // Ação do menu
-          },
+          onPressed: () {},
         ),
         title: const Text(
           'Dashboard',
@@ -25,61 +28,33 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Grid de cartões de estatísticas
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.0,
                 mainAxisSpacing: 16.0,
-                children: const [
-                  _StatisticCard(
-                    title: 'Novo',
-                    value: '12',
-                    backgroundColor: Color(0xFFE3F2FD), // Azul claro
-                    valueColor: Colors.blue,
-                  ),
-                  _StatisticCard(
-                    title: 'Em produção',
-                    value: '8',
-                    backgroundColor: Color(0xFFFFF3E0), // Laranja claro
-                    valueColor: Colors.deepOrange,
-                  ),
-                  _StatisticCard(
-                    title: 'Concluído',
-                    value: '25',
-                    backgroundColor: Color(0xFFE8F5E9), // Verde claro
-                    valueColor: Colors.green,
-                  ),
-                  _StatisticCard(
-                    title: 'Entregue',
-                    value: '15',
-                    backgroundColor: Color(0xFFEEEEEE), // Cinza claro
-                    valueColor: Colors.grey,
-                  ),
+                children: [
+                  _StatisticCard(title: 'Novo', value: pedidoController.novosPedidos.toString(), backgroundColor: const Color(0xFFE3F2FD), valueColor: Colors.blue),
+                  _StatisticCard(title: 'Em produção', value: pedidoController.emProducaoPedidos.toString(), backgroundColor: const Color(0xFFFFF3E0), valueColor: Colors.deepOrange),
+                  _StatisticCard(title: 'Concluído', value: pedidoController.concluidosPedidos.toString(), backgroundColor: const Color(0xFFE8F5E9), valueColor: Colors.green),
+                  _StatisticCard(title: 'Entregue', value: pedidoController.entreguesPedidos.toString(), backgroundColor: const Color(0xFFEEEEEE), valueColor: Colors.grey),
                 ],
               ),
             ),
             const SizedBox(height: 24.0),
-
-            // Botão "Criar Novo Pedido"
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Ação para criar novo pedido
+                  Navigator.pushNamed(context, '/new-pedido');
                 },
                 icon: const Icon(Icons.add),
-                label: const Text(
-                  'Criar Novo Pedido',
-                  style: TextStyle(fontSize: 18),
-                ),
+                label: const Text('Criar Novo Pedido', style: TextStyle(fontSize: 18)),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                 ),
               ),
             ),
@@ -87,33 +62,7 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Garante que todos os itens são visíveis
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey[600],
-        currentIndex: 0, // Define 'Dashboard' como selecionado inicialmente
-        onTap: (index) {
-          // Lógica para navegação entre as telas
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: 'Pedidos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Clientes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Configurações',
-          ),
-        ],
-      ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 0),
     );
   }
 }
