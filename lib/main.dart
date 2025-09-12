@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
-import 'views/login_screen.dart'; // Make sure the path is correct
+import 'package:provider/provider.dart';
+import 'controllers/pedido_controller.dart';
+import 'controllers/cliente_controller.dart';
+import 'controllers/login_controller.dart';
+import 'views/login_screen.dart';
+import 'views/dashboard_screen.dart';
+import 'views/PedidosScreen.dart';
+import 'views/new_pedido_screen.dart';
+import 'views/new_client_screen.dart';
+import 'views/clientes_screen.dart';
+import 'views/configuracoes_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginController()),
+        ChangeNotifierProvider(create: (_) => PedidoController()),
+        ChangeNotifierProvider(create: (_) => ClienteController()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -12,12 +31,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Login App',
+      title: 'Gestão de Pedidos',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const LoginScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+        '/pedidos': (context) => const PedidosScreen(),
+        '/clientes': (context) => const ClientesScreen(),
+        '/configuracoes': (context) => const ConfiguracoesScreen(),
+        '/new-pedido': (context) => const NewPedidoScreen(),
+        '/new-client': (context) => const NewClientScreen(),
+      },
     );
   }
 }
