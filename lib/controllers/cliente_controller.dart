@@ -15,4 +15,14 @@ class ClienteController with ChangeNotifier {
     _clientes.add(novoCliente);
     notifyListeners();
   }
+
+  void atualizarCliente(Cliente clienteAtualizado) {
+    final index = _clientes.indexWhere((c) => c.id == clienteAtualizado.id);
+    if (index != -1) {
+      _clientes[index].nome = clienteAtualizado.nome;
+      _clientes[index].telefone = clienteAtualizado.telefone;
+      notifyListeners();
+    }
+  }
+  
 }
