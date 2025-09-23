@@ -17,6 +17,10 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _quantidadeController = TextEditingController();
   final TextEditingController _dataController = TextEditingController();
+  final TextEditingController _previsaoController = TextEditingController();
+
+  DateTime? _dataPedido;
+  DateTime? _dataPrevisao;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +75,7 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
               controller: _itemController,
               decoration: InputDecoration(
                 labelText: 'Item do Pedido',
-                suffixIcon: Icon(Icons.content_copy, color: Colors.grey),
+                suffixIcon: const Icon(Icons.content_copy, color: Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide.none,
@@ -86,7 +90,7 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Quantidade',
-                suffixIcon: Icon(Icons.filter_none, color: Colors.grey),
+                suffixIcon: const Icon(Icons.filter_none, color: Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide.none,
@@ -96,12 +100,61 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
               ),
             ),
             const SizedBox(height: 16.0),
+
+            // Data do Pedido
             TextFormField(
               controller: _dataController,
               readOnly: true,
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null) {
+                  setState(() {
+                    _dataPedido = picked;
+                    _dataController.text =
+                        "${picked.day}/${picked.month}/${picked.year}";
+                  });
+                }
+              },
               decoration: InputDecoration(
-                labelText: 'mm/dd/yyyy',
-                suffixIcon: Icon(Icons.calendar_today, color: Colors.grey),
+                labelText: 'Data do Pedido',
+                suffixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+              ),
+            ),
+            const SizedBox(height: 16.0),
+
+            // Previsão
+            TextFormField(
+              controller: _previsaoController,
+              readOnly: true,
+              onTap: () async {
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now().add(const Duration(days: 3)),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
+                );
+                if (picked != null) {
+                  setState(() {
+                    _dataPrevisao = picked;
+                    _previsaoController.text =
+                        "${picked.day}/${picked.month}/${picked.year}";
+                  });
+                }
+              },
+              decoration: InputDecoration(
+                labelText: 'Previsão de Entrega',
+                suffixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide.none,
@@ -115,12 +168,16 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  if (_selectedClient != null) {
+                  if (_selectedClient != null &&
+                      _dataPedido != null &&
+                      _dataPrevisao != null) {
                     final novoPedido = Pedido(
-                      id: '12352',
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
                       item: _itemController.text,
-                      quantidade: int.tryParse(_quantidadeController.text) ?? 0,
-                      data: DateTime.now(),
+                      quantidade:
+                          int.tryParse(_quantidadeController.text) ?? 0,
+                      data: _dataPedido!,
+                      previsao: _dataPrevisao!, // <-- Aqui está o novo campo
                       status: 'Novo',
                       cliente: _selectedClient!,
                     );
@@ -129,6 +186,10 @@ class _NewPedidoScreenState extends State<NewPedidoScreen> {
                       listen: false,
                     ).adicionarNovoPedido(novoPedido);
                     Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Preencha todos os campos!')),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

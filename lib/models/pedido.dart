@@ -5,8 +5,9 @@ class Pedido {
   final String item;
   final int quantidade;
   final DateTime data;
-  String status; // Pode ser alterado, como 'Novo', 'Em Produção', 'Concluído'
-  final Cliente cliente; // O cliente associado ao pedido
+  String status; 
+  final Cliente cliente;
+  final DateTime previsao;  // Adicionando o campo previsao
 
   Pedido({
     required this.id,
@@ -15,6 +16,7 @@ class Pedido {
     required this.data,
     required this.status,
     required this.cliente,
+    required this.previsao,  // Incluindo previsao no construtor
   });
 
   // Método de conversão de JSON (para consumo de API)
@@ -26,6 +28,7 @@ class Pedido {
       data: DateTime.parse(json['data'] as String),
       status: json['status'] as String,
       cliente: Cliente.fromJson(json['cliente']), // Converte o JSON do cliente
+      previsao: DateTime.parse(json['previsao'] as String), // Adicionando previsão no fromJson
     );
   }
 
@@ -38,6 +41,7 @@ class Pedido {
       'data': data.toIso8601String(),
       'status': status,
       'cliente': cliente.toJson(), // Converte o cliente para JSON
+      'previsao': previsao.toIso8601String(),  // Adicionando previsão no toJson
     };
   }
 }
